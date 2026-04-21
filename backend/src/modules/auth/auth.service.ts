@@ -39,7 +39,7 @@ export class AuthService {
         try {
             const ticket = await googleClient.verifyIdToken({
                 idToken,
-                audience: process.env.GOOGLE_CLIENT_ID,
+                audience: (process.env.GOOGLE_CLIENT_ID as string) || '',
             });
             return ticket.getPayload();
         } catch (error) {
