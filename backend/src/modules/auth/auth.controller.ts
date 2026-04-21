@@ -196,7 +196,12 @@ export class AuthController {
 
             const { sub: googleId, email, name, picture } = payload;
 
-            let user = await User.findOne({ $or: [{ googleId }, { email }] });
+            const queryConditions: any[] = [{ googleId }];
+            if (email) {
+                queryConditions.push({ email });
+            }
+
+            let user = await User.findOne({ $or: queryConditions });
 
             if (user) {
                 // If user exists with email but no googleId, link them
