@@ -306,6 +306,8 @@ class _ContentTab extends StatelessWidget {
                     contentTitle: content.title,
                     contentUrl: content.contentUrl,
                     contentType: content.contentType,
+                    s3Key: content.s3Key,
+                    metadata: content.metadata,
                   ),
                 ),
               );

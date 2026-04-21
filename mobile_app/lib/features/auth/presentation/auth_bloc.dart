@@ -75,6 +75,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             state.copyWith(isLoading: false, errorMessage: response.message),
           );
         }
+      } on RequiresOtpException catch (e) {
+        // Specifically catch the OTP requirement to navigate to OTP screen
+        emit(
+          state.copyWith(
+            isLoading: false,
+            isOtpSent: true,
+            email: e.email,
+          ),
+        );
       } catch (e) {
         emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
       }

@@ -22,7 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state.isAuthenticated) {
+          if (state.isOtpSent) {
+            // Navigate to OTP screen instead of home
+            context.push('/otp', extra: _emailController.text);
+          } else if (state.isAuthenticated) {
             context.go('/home');
           } else if (state.errorMessage != null) {
             ScaffoldMessenger.of(

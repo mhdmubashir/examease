@@ -5,11 +5,11 @@ export interface IUser extends Document {
     name: string;
     email: string;
     phone: string;
-    passwordHash?: string; // Optional for Google users
-    googleId?: string;     // Unique ID from Google
+    passwordHash?: string | undefined; // Optional for Google users
+    googleId?: string | undefined;     // Unique ID from Google
     isVerified: boolean;   // Whether account is OTP verified
-    otp?: string;          // 4-digit verification code
-    otpExpiresAt?: Date;   // OTP expiration time
+    otp?: string | undefined;          // 4-digit verification code
+    otpExpiresAt?: Date | undefined;   // OTP expiration time
     role: UserRole;
     purchasedItems: Schema.Types.ObjectId[];
     subscription: {

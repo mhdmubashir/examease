@@ -29,7 +29,7 @@ async function seed() {
         const existing = await User.findOne({ email: 'mubashir@gmail.com' });
         if (existing) {
             console.log('⚠️  User already exists, updating role to ADMIN...');
-            await User.updateOne({ email: 'mubashir@gmail.com' }, { role: 'ADMIN' });
+            await User.updateOne({ email: 'mubashir@gmail.com' }, { role: 'ADMIN', isVerified: true });
             console.log('✅ Role updated to ADMIN');
         } else {
             const passwordHash = await bcrypt.hash('123456', 12);
@@ -40,6 +40,7 @@ async function seed() {
                 passwordHash,
                 role: 'ADMIN',
                 isBlocked: false,
+                isVerified: true,
             });
             console.log('✅ Admin user created: mubashir@gmail.com / 123456');
         }

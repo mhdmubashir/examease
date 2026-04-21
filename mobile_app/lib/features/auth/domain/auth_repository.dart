@@ -16,3 +16,11 @@ abstract class AuthRepository {
   Future<bool> isAuthenticated();
   Future<ApiResponse<UserModel>> getProfile();
 }
+
+class RequiresOtpException implements Exception {
+  final String email;
+  RequiresOtpException(this.email);
+
+  @override
+  String toString() => 'OTP Required for $email';
+}

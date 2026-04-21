@@ -40,12 +40,12 @@ class _OtpScreenState extends State<OtpScreen> {
           if (state.isAuthenticated) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Verification successful! You can now login.'),
+                content: Text('Verification successful!'),
                 backgroundColor: Colors.green,
               ),
             );
-            // Go to login as requested
-            context.go('/login');
+            // Both registration and login result in authentication now.
+            context.go('/home');
           } else if (state.errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.errorMessage!)),

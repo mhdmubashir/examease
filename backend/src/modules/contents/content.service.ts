@@ -82,7 +82,8 @@ export class ContentService {
         if (!search) {
             const cacheKey = CacheKeys.contentsByModule(
                 moduleId || 'all',
-                Number(page)
+                Number(page),
+                contentType
             );
             const cached = await redisService.get<any>(cacheKey);
             if (cached) {
@@ -112,7 +113,8 @@ export class ContentService {
         if (!search) {
             const cacheKey = CacheKeys.contentsByModule(
                 moduleId || 'all',
-                Number(page)
+                Number(page),
+                contentType
             );
             await redisService.set(cacheKey, result, 120);
         }

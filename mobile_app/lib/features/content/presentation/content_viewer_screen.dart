@@ -18,6 +18,7 @@ class ContentViewerScreen extends StatefulWidget {
   final String? contentUrl;
   final String? contentType;
   final String? s3Key; // S3 key for video content
+  final String? metadata; // Used for markdown content
 
   const ContentViewerScreen({
     super.key,
@@ -26,6 +27,7 @@ class ContentViewerScreen extends StatefulWidget {
     this.contentUrl,
     this.contentType,
     this.s3Key,
+    this.metadata,
   });
 
   @override
@@ -71,13 +73,15 @@ class _ContentViewerScreenState extends State<ContentViewerScreen> {
       );
     }
 
-    if (widget.contentUrl == null || widget.contentUrl!.isEmpty) {
-      return Center(
-        child: Text(
-          'No content URL provided.',
-          style: TextStyle(fontSize: Responsive.s(16)),
-        ),
-      );
+    if (widget.contentType?.toUpperCase() != 'NOTE' && widget.contentType?.toUpperCase() != 'STUDY_MATERIAL') {
+      if (widget.contentUrl == null || widget.contentUrl!.isEmpty) {
+        return Center(
+          child: Text(
+            'No content URL provided.',
+            style: TextStyle(fontSize: Responsive.s(16)),
+          ),
+        );
+      }
     }
 
     switch (widget.contentType?.toUpperCase()) {
@@ -86,8 +90,9 @@ class _ContentViewerScreenState extends State<ContentViewerScreen> {
           contentId: widget.contentId,
           url: widget.contentUrl!,
         );
+      case 'NOTE':
       case 'STUDY_MATERIAL':
-        return _StudyMaterial(url: widget.contentUrl!);
+        return _StudyMaterial(metadata: widget.metadata);
       default:
         return Center(
           child: Column(
@@ -386,14 +391,27 @@ class _PdfViewerState extends State<_PdfViewer> {
 
   Future<void> _downloadPdf() async {
     try {
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _error = null;
+        });
+      }
+
+      final contentRepo = sl<ContentRepository>();
+      final response = await contentRepo.getDocumentStreamUrl(widget.contentId);
+
+      if (!response.status || response.data == null || response.data!.isEmpty) {
+        throw Exception(response.message ?? 'Failed to get PDF URL');
+      }
+
+      final freshUrl = response.data!;
+
       final dir = await getTemporaryDirectory();
-      // Use contentId to create a unique filename and avoid collisions
       final file = File('${dir.path}/pdf_${widget.contentId}.pdf');
 
-      // Check if file already exists to avoid redundant downloads
-      if (!await file.exists()) {
-        await Dio().download(widget.url, file.path);
-      }
+      // Always download using the fresh URL, replacing any old file
+      await Dio().download(freshUrl, file.path);
 
       if (mounted) {
         setState(() {
@@ -478,39 +496,32 @@ class _PdfViewerState extends State<_PdfViewer> {
 }
 
 class _StudyMaterial extends StatelessWidget {
-  final String url;
-  const _StudyMaterial({required this.url});
+  final String? metadata;
+  const _StudyMaterial({this.metadata});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Response>(
-      future: Dio().get(url),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.all(Responsive.s(24)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.grey, size: 48),
-                  const SizedBox(height: 16),
-                  Text('Failed to load material: ${snapshot.error}'),
-                ],
-              ),
-            ),
-          );
-        }
-        final content = snapshot.data?.data.toString() ?? '';
-        return Markdown(
-          data: content,
-          selectable: true,
-          padding: EdgeInsets.all(Responsive.s(16)),
-        );
-      },
+    if (metadata == null || metadata!.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(Responsive.s(24)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.grey, size: 48),
+              const SizedBox(height: 16),
+              const Text('No content found for this note.'),
+            ],
+          ),
+        ),
+      );
+    }
+    
+    return Markdown(
+      data: metadata!,
+      selectable: true,
+      padding: EdgeInsets.all(Responsive.s(16)),
     );
   }
 }
+

@@ -11,6 +11,9 @@ abstract class ContentRepository {
 
   /// Fetch an authenticated presigned URL for streaming an S3-hosted video.
   Future<ApiResponse<String>> getVideoStreamUrl(String contentId);
+
+  /// Fetch an authenticated presigned URL for downloading an S3-hosted document.
+  Future<ApiResponse<String>> getDocumentStreamUrl(String contentId);
 }
 
 class ContentRepositoryImpl implements ContentRepository {
@@ -70,4 +73,16 @@ class ContentRepositoryImpl implements ContentRepository {
       },
     );
   }
+
+  @override
+  Future<ApiResponse<String>> getDocumentStreamUrl(String contentId) async {
+    return await mainService.get<String>(
+      '/documents/stream/$contentId',
+      fromJsonT: (json) {
+        final data = json as Map<String, dynamic>;
+        return data['streamUrl'] as String? ?? '';
+      },
+    );
+  }
 }
+

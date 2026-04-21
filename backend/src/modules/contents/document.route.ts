@@ -25,6 +25,9 @@ const upload = multer({
 // All routes require authentication
 router.use(authenticate);
 
+// User route — get presigned stream URL for documents
+router.get('/stream/:contentId', DocumentController.getStreamUrl);
+
 // Admin-only routes
 router.post(
     '/upload',

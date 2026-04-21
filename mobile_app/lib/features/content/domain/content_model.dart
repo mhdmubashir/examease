@@ -101,6 +101,8 @@ class ContentModel extends Equatable {
     String? metadataString;
     if (json['metadata'] != null) {
       metadataString = json['metadata'].toString();
+    } else if (data['content'] != null) {
+      metadataString = data['content'].toString();
     } else if (json['data'] != null) {
       metadataString = json['data'].toString();
     }

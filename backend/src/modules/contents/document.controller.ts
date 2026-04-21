@@ -109,4 +109,64 @@ export class DocumentController {
             next(error);
         }
     }
+
+    /**
+     * Get a presigned streaming URL for a document content item.
+     * Requires user authentication (any role).
+     * Uses Redis caching to avoid generating new URLs unnecessarily.
+     */
+    static async getStreamUrl(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            const contentId = req.params.contentId as string;
+
+            if (!contentId) {
+                return sendError(res, 400, 'Content ID is required');
+            }
+
+            // Check Redis cache first (cached for 50 min, URL valid for 60 min)
+            const cacheKey = `content_doc_url:${contentId}`;
+            const cachedUrl = await redisService.get<string>(cacheKey);
+            if (cachedUrl) {
+                return sendResponse(res, 200, true, 'Document URL retrieved (cached)', {
+                    streamUrl: cachedUrl,
+                    cached: true,
+                });
+            }
+
+            // Fetch content from DB
+            const content = await ContentService.getContentById(contentId);
+            if (!content) {
+                return sendError(res, 404, 'Content not found');
+            }
+
+            if (content.contentType !== ContentType.PDF) {
+                return sendError(res, 400, 'Content is not a document');
+            }
+
+            const s3Key = content.data?.s3Key;
+            if (!s3Key) {
+                return sendError(res, 404, 'Document file not found for this content');
+            }
+
+            // Verify the file exists in S3
+            const exists = await s3Service.objectExists(s3Key);
+            if (!exists) {
+                return sendError(res, 404, 'Document file not found in storage');
+            }
+
+            // Generate presigned URL (valid for 60 min)
+            const presignedUrl = await s3Service.getPresignedUrl(s3Key, 3600);
+
+            // Cache for 50 minutes (10 min buffer before URL expires)
+            await redisService.set(cacheKey, presignedUrl, 3000);
+
+            return sendResponse(res, 200, true, 'Document URL generated', {
+                streamUrl: presignedUrl,
+                cached: false,
+            });
+        } catch (error) {
+            logger.error({ err: error }, 'Failed to get document stream URL');
+            next(error);
+        }
+    }
 }

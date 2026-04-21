@@ -58,6 +58,11 @@ class AuthRepositoryImpl implements AuthRepository {
   ) async {
     if (response.status && response.data != null) {
       final dataMap = response.data as Map<String, dynamic>;
+
+      if (dataMap.containsKey('requireOtp') && dataMap['requireOtp'] == true) {
+        throw RequiresOtpException(dataMap['email'] as String? ?? '');
+      }
+
       final userMap = dataMap['user'] as Map<String, dynamic>;
       final accessToken = dataMap['accessToken'] as String?;
       final refreshToken = dataMap['refreshToken'] as String?;

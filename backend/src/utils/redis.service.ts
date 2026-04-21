@@ -146,7 +146,7 @@ class RedisService {
 // Cache key builders (centralized namespace management)
 export const CacheKeys = {
     content: (id: string) => `examease:content:${id}`,
-    contentsByModule: (moduleId: string, page: number) => `examease:contents:module:${moduleId}:page:${page}`,
+    contentsByModule: (moduleId: string, page: number, contentType?: string) => `examease:contents:module:${moduleId}:type:${contentType || 'all'}:page:${page}`,
     videoUrl: (contentId: string) => `examease:video:url:${contentId}`,
     allContentsPattern: () => 'examease:contents:*',
     contentPattern: (id: string) => `examease:content:${id}*`,
