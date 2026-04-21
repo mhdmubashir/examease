@@ -99,27 +99,27 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: Responsive.s(50),
                         ),
                         SizedBox(height: Responsive.s(16)),
-                        OutlinedButton.icon(
-                          onPressed: state.isLoading
-                              ? null
-                              : () {
-                                  context
-                                      .read<AuthBloc>()
-                                      .add(GoogleSignInRequested());
-                                },
-                          icon: Image.network(
-                            'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
-                            height: 24,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.login),
-                          ),
-                          label: const Text('Sign in with Google'),
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                vertical: Responsive.s(12)),
-                            side: const BorderSide(color: Colors.grey),
-                          ),
-                        ),
+                        // OutlinedButton.icon(
+                        //   onPressed: state.isLoading
+                        //       ? null
+                        //       : () {
+                        //           context
+                        //               .read<AuthBloc>()
+                        //               .add(GoogleSignInRequested());
+                        //         },
+                        //   icon: Image.network(
+                        //     'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
+                        //     height: 24,
+                        //     errorBuilder: (context, error, stackTrace) =>
+                        //         const Icon(Icons.login),
+                        //   ),
+                        //   label: const Text('Sign in with Google'),
+                        //   style: OutlinedButton.styleFrom(
+                        //     padding: EdgeInsets.symmetric(
+                        //         vertical: Responsive.s(12)),
+                        //     side: const BorderSide(color: Colors.grey),
+                        //   ),
+                        // ),
                       ],
                     );
                   },

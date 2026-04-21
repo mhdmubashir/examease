@@ -7,10 +7,12 @@ class AppConfig {
   static String get _apiBaseURLDev {
     try {
       if (Platform.isAndroid) {
-        return "http://10.0.2.2:5050/api/v1";
+        // return "http://10.0.2.2:5050/api/v1";
+        return "https://api.examease.in/api/v1";
       }
     } catch (_) {}
-    return "http://localhost:5050/api/v1";
+    // return "http://localhost:5050/api/v1";
+    return "https://api.examease.in/api/v1";
   }
 
   final String _apiBaseURLProd = "https://api.examease.com/v1";
