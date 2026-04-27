@@ -19,6 +19,7 @@ import { appConfigRoutes } from './modules/app-config/app-config.route.js';
 import { analyticsRoutes } from './modules/analytics/analytics.route.js';
 import { videoRoutes } from './modules/contents/video.route.js';
 import { documentRoutes } from './modules/contents/document.route.js';
+import { smartdocRoutes } from './modules/smartdoc/smartdoc.routes.js';
 
 const app: Application = express();
 
@@ -51,6 +52,7 @@ app.use('/api/v1/app-config', appConfigRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/videos', videoRoutes);
 app.use('/api/v1/documents', documentRoutes);
+app.use('/api/v1/smartdoc', smartdocRoutes);
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {

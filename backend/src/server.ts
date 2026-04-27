@@ -3,9 +3,10 @@ import mongoose from 'mongoose';
 import app from './app.js';
 import logger from './utils/logger.js';
 import { redisService } from './utils/redis.service.js';
+import { AppConfig } from './app_config.js';
 
 const PORT = process.env.PORT || 5050;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/examease';
+const MONGODB_URI = AppConfig.mongoUrl;
 
 const startServer = async () => {
     try {

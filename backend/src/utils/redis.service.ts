@@ -1,5 +1,6 @@
 import RedisImport from 'ioredis';
 import logger from './logger.js';
+import { AppConfig } from '@/app_config.js';
 
 const Redis = (RedisImport as any).default || RedisImport;
 type RedisType = any; // fallback type
@@ -24,7 +25,7 @@ class RedisService {
      * Call this once at server startup.
      */
     async connect(): Promise<void> {
-        const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+        const redisUrl = AppConfig.redisUrl;
 
         try {
             this.client = new Redis(redisUrl, {

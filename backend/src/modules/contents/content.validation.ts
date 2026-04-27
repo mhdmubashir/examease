@@ -31,19 +31,26 @@ export const createContentSchema = z.discriminatedUnion('contentType', [
         contentType: z.literal(ContentType.PDF),
         ...baseContentBody,
         data: z.object({
-            fileUrl: z.string().url(),
+            fileUrl: z.string().url().optional(),
+            s3Key: z.string().min(1).optional(),
+            media: z.any().optional(),
             pageCount: z.number().optional(),
+        }).refine(data => data.fileUrl || data.s3Key || data.media, {
+            message: "Either fileUrl, s3Key or media object is required",
         }),
     }),
     z.object({
         contentType: z.literal(ContentType.VIDEO),
         ...baseContentBody,
         data: z.object({
-            s3Key: z.string().min(1, 'S3 key is required'),
+            s3Key: z.string().min(1, 'S3 key is required').optional(),
+            media: z.any().optional(),
             originalFileName: z.string().optional(),
             fileSize: z.number().optional(),
             mimeType: z.string().optional(),
             durationSeconds: z.number().optional(),
+        }).refine(data => data.s3Key || data.media, {
+            message: "Either s3Key or media object is required",
         }),
     }),
     z.object({
